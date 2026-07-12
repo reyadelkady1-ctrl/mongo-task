@@ -1,8 +1,6 @@
 from pymongo import MongoClient
 
-uri = "mongodb+srv://reyad:Reyad132007elkady@cluster0.2x7qdza.mongodb.net/?appName=Cluster0&compressors=zlib"
-
-client = MongoClient(uri)
+client = MongoClient("mongodb://localhost:27017/")
 
 db = client["students"]
 collection = db["people"]
