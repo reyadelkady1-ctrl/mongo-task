@@ -1,3 +1,5 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -11,14 +13,15 @@ client = MongoClient(uri)
 db = client["students"]
 collection = db["people"]
 
-name = input("Enter your name: ")
-age = int(input("Enter your age: "))
+app = FastAPI()
 
-person = {
-    "name": name,
-    "age": age
-}
 
-collection.insert_one(person)
+class Person(BaseModel):
+    name: str
+    age: int
 
-print("Data saved successfully!")
+
+@app.post("/people")
+def create_person(person: Person):
+    collection.insert_one(person.model_dump())
+    return {"message": "Data saved successfully!"}
