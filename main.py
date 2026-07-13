@@ -1,6 +1,12 @@
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
-client = MongoClient("mongodb://localhost:27017/")
+load_dotenv()
+
+uri = os.getenv("MONGO_URI")
+
+client = MongoClient(uri)
 
 db = client["students"]
 collection = db["people"]
