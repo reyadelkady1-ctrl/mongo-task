@@ -21,6 +21,7 @@ class Person(BaseModel):
     age: int
 
 
+
 @app.post("/people")
 def create_person(person: Person):
     collection.insert_one(person.model_dump())
