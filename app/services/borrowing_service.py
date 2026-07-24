@@ -6,37 +6,60 @@ from app.database import (
     borrowings_collection,
 )
 
+from app.schemas.borrowing_schema import (
+    BorrowBookRequest,
+    BorrowBookResponse,
+)
 
-def borrow_book_service(borrow):
+from app.schemas.book_schema import StudentBookResponse
+
+
+def borrow_book_service(
+    borrow: BorrowBookRequest,
+) -> BorrowBookResponse:
 
     student = students_collection.find_one(
         {"_id": ObjectId(borrow.student_id)}
     )
 
     if not student:
-        return {"message": "Student not found"}
+        return BorrowBookResponse(
+            message="Student not found"
+        )
 
     book = books_collection.find_one(
         {"_id": ObjectId(borrow.book_id)}
     )
 
     if not book:
-        return {"message": "Book not found"}
+        return BorrowBookResponse(
+            message="Book not found"
+        )
 
     taken = borrowings_collection.find_one(
         {"book_id": ObjectId(borrow.book_id)}
     )
 
     if taken:
-        return {"message": "Book already taken"}
+        return BorrowBookResponse(
+            message="Book already taken"
+        )
 
-    borrowings_collection.insert_one({
-        "student_id": ObjectId(borrow.student_id),
-        "book_id": ObjectId(borrow.book_id)
-    })
+    borrowings_collection.insert_one(
+        {
+            "student_id": ObjectId(borrow.student_id),
+            "book_id": ObjectId(borrow.book_id),
+        }
+    )
 
-    return {"message": "Book borrowed successfully"}
-def get_student_books_service(student_id):
+    return BorrowBookResponse(
+        message="Book borrowed successfully"
+    )
+
+
+def get_student_books_service(
+    student_id: str,
+) -> list[StudentBookResponse]:
 
     books = []
 
@@ -51,11 +74,12 @@ def get_student_books_service(student_id):
         )
 
         if book:
-
-            books.append({
-                "id": str(book["_id"]),
-                "title": book["title"],
-                "author": book["author"]
-            })
+            books.append(
+                StudentBookResponse(
+                    id=str(book["_id"]),
+                    title=book["title"],
+                    author=book["author"],
+                )
+            )
 
     return books
